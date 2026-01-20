@@ -107,7 +107,7 @@ export default function Home() {
           <div className="bg-white border-2 border-slate-200 p-8 rounded-3xl hover:border-[#041E42] transition group">
             <h3 className="text-2xl font-serif font-bold mb-2 text-[#041E42]">The Old Main Classic</h3>
             <p className="text-slate-500 mb-6 text-sm">Our signature Penn State landmark engraving.</p>
-            <div className="text-3xl font-bold mb-6">$30</div>
+            <div className="text-3xl font-bold mb-6">$50</div>
             <a 
               href={OLD_MAIN_LINK}
               className="block text-center bg-[#041E42] text-white py-4 rounded-xl font-bold hover:bg-[#001433] transition"
@@ -121,7 +121,7 @@ export default function Home() {
             <div className="absolute top-0 right-0 bg-[#041E42] text-white px-4 py-1 text-xs font-bold uppercase">New</div>
             <h3 className="text-2xl font-serif font-bold mb-2 text-[#041E42]">Custom Masterpiece</h3>
             <p className="text-slate-500 mb-6 text-sm">Upload your own photo to be laser-sketched on wood.</p>
-            <div className="text-3xl font-bold mb-6">$40</div>
+            <div className="text-3xl font-bold mb-6">$70</div>
             
             <div className="space-y-4">
                <label className="block p-4 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:bg-slate-50 transition">
