@@ -96,6 +96,49 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Two-Option Selection Section */}
+      <section className="max-w-6xl mx-auto py-20 px-6">
+        <h2 className="text-4xl font-serif font-bold text-center text-[#041E42] mb-12">Choose Your Canvas</h2>
+        
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Option 1: The Classic Old Main */}
+          <div className="bg-white border-2 border-slate-200 p-8 rounded-3xl hover:border-[#041E42] transition group">
+            <h3 className="text-2xl font-serif font-bold mb-2 text-[#041E42]">The Old Main Classic</h3>
+            <p className="text-slate-500 mb-6 text-sm">Our signature Penn State landmark engraving.</p>
+            <div className="text-3xl font-bold mb-6">$30</div>
+            <a 
+              href={OLD_MAIN_LINK}
+              className="block text-center bg-[#041E42] text-white py-4 rounded-xl font-bold hover:bg-[#001433] transition"
+            >
+              Buy Original
+            </a>
+          </div>
+
+          {/* Option 2: Custom Upload */}
+          <div className="bg-white border-2 border-[#041E42] p-8 rounded-3xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-[#041E42] text-white px-4 py-1 text-xs font-bold uppercase">New</div>
+            <h3 className="text-2xl font-serif font-bold mb-2 text-[#041E42]">Custom Masterpiece</h3>
+            <p className="text-slate-500 mb-6 text-sm">Upload your own photo to be laser-sketched on wood.</p>
+            <div className="text-3xl font-bold mb-6">$40</div>
+            
+            <div className="space-y-4">
+               <label className="block p-4 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                  <input type="file" className="hidden" accept="image/*" />
+                  <span className="text-sm text-slate-500 text-center block">Click to select your image</span>
+               </label>
+               
+               <a 
+                href={CUSTOM_ENGRAVE_LINK}
+                className="block text-center bg-[#041E42] text-white py-4 rounded-xl font-bold hover:bg-[#001433] transition"
+              >
+                Purchase Custom Engraving
+              </a>
+              <p className="text-[10px] text-slate-400 text-center">After purchase, we will confirm your design via email.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 py-12 px-6 text-center">
         <p className="font-serif text-slate-200 text-lg mb-4">NITTANY CRAFT.</p>
