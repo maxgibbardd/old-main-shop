@@ -47,7 +47,7 @@ export default function Home() {
             className="inline-flex items-center gap-2 bg-white text-[#041E42] px-8 py-4 rounded-full font-bold text-lg hover:bg-slate-100 hover:scale-105 transition transform shadow-lg"
           >
             <ShoppingBag size={20} />
-            Order Your Piece - $30
+            Order Your Piece - $50
           </a>
           <p className="mt-4 text-slate-400 text-sm">Free shipping to State College & beyond.</p>
         </div>
