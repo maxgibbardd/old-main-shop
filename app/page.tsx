@@ -131,14 +131,7 @@ export default function Home() {
               >
                 Upload & Preview Your Image
               </Link>
-              
-              <a 
-                href={CUSTOM_ENGRAVE_LINK}
-                className="block text-center bg-white border-2 border-[#041E42] text-[#041E42] py-4 rounded-xl font-bold hover:bg-slate-50 transition"
-              >
-                Purchase Custom Engraving
-              </a>
-              <p className="text-[10px] text-slate-400 text-center">Preview your design first, then purchase when ready.</p>
+              <p className="text-[10px] text-slate-400 text-center">Upload your image to see a preview, then purchase when ready.</p>
             </div>
           </div>
         </div>
