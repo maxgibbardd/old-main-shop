@@ -25,7 +25,7 @@ export default function Home() {
             <img 
               src="/favicon.ico" 
               alt="Nittany Craft Logo" 
-              className="h-8 w-auto" 
+              className="h-20 w-auto" 
             />
           </div>
 
