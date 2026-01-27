@@ -20,7 +20,15 @@ export default function Home() {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-[#041E42] text-white py-4 px-6 shadow-md">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-serif font-bold tracking-wider">NITTANY CRAFT.</h1>
+          {/* Replaced NITTANY CRAFT text with your logo */}
+          <div className="flex items-center">
+            <img 
+              src="/favicon.ico" 
+              alt="Nittany Craft Logo" 
+              className="h-8 w-auto" 
+            />
+          </div>
+
           <a 
             href={STRIPE_LINK}
             className="bg-white text-[#041E42] px-5 py-2 rounded-full font-medium hover:bg-slate-100 transition text-sm"
