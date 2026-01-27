@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     // This model supports text-and-image-to-image editing
     // Note: Image generation models require paid API plan (not available on free tier)
     const model = genAI.getGenerativeModel({ 
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash-preview-image' 
+      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash-image' 
     });
 
     // Prepare the image part

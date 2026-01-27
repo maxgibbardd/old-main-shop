@@ -170,7 +170,7 @@ export default function Home() {
             <div className="absolute top-0 right-0 bg-[#041E42] text-white px-4 py-1 text-xs font-bold uppercase">New</div>
             <h3 className="text-2xl font-serif font-bold mb-2 text-[#041E42]">Custom Masterpiece</h3>
             <p className="text-slate-500 mb-6 text-sm">Upload your own photo to be laser-sketched on wood.</p>
-            <div className="text-3xl font-bold mb-6">$40</div>
+            <div className="text-3xl font-bold mb-6">$70</div>
             
             <div className="space-y-4">
                <Link 
