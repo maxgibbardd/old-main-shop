@@ -1,40 +1,62 @@
 // file: app/page.tsx
-import React from 'react';
-import Head from 'next/head';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Star, ShieldCheck, Truck } from 'lucide-react';
+import { ShoppingBag, Star, ShieldCheck, Truck, Loader2 } from 'lucide-react';
 
 export default function Home() {
-  // REPLACE THIS WITH YOUR ACTUAL STRIPE PAYMENT LINK
-  const STRIPE_LINK = "https://buy.stripe.com/00wdRbeuEewc3Hc14C3Nm03"; 
-  const OLD_MAIN_LINK = "https://buy.stripe.com/00wdRbeuEewc3Hc14C3Nm03";
-  const CUSTOM_ENGRAVE_LINK = "https://buy.stripe.com/fZu7sNfyIfAgb9E7t03Nm02";
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleOldMainPurchase = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/create-checkout-old-main', {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Redirect to Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to start checkout');
+      setIsLoading(false);
+      console.error('Checkout error:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      <Head>
-        <title>Old Main | Laser Engraved Collection</title>
-        <meta name="description" content="Premium laser engraved wood art of Penn State's Old Main." />
-      </Head>
-
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-[#041E42] text-white py-4 px-6 shadow-md">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          {/* Replaced NITTANY CRAFT text with your logo */}
-          <div className="flex items-center">
-            <img 
-              src="/favicon.ico" 
-              alt="Nittany Craft Logo" 
-              className="h-20 w-auto" 
-            />
-          </div>
-
-          <a 
-            href={STRIPE_LINK}
-            className="bg-white text-[#041E42] px-5 py-2 rounded-full font-medium hover:bg-slate-100 transition text-sm"
+          <h1 className="text-xl font-serif font-bold tracking-wider">NITTANY CRAFT.</h1>
+          <button
+            onClick={handleOldMainPurchase}
+            disabled={isLoading}
+            className="bg-white text-[#041E42] px-5 py-2 rounded-full font-medium hover:bg-slate-100 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            Buy Now
-          </a>
+            {isLoading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Loading...
+              </>
+            ) : (
+              'Buy Now'
+            )}
+          </button>
         </div>
       </nav>
 
@@ -51,13 +73,23 @@ export default function Home() {
           <p className="text-lg md:text-xl text-slate-200 max-w-2xl mx-auto mb-10 leading-relaxed">
             Bring the heart of Happy Valley into your home. A precision laser-cut masterpiece crafted from premium hardwood, capturing every architectural detail of Penn State's iconic landmark.
           </p>
-          <a 
-            href={STRIPE_LINK}
-            className="inline-flex items-center gap-2 bg-white text-[#041E42] px-8 py-4 rounded-full font-bold text-lg hover:bg-slate-100 hover:scale-105 transition transform shadow-lg"
+          <button
+            onClick={handleOldMainPurchase}
+            disabled={isLoading}
+            className="inline-flex items-center gap-2 bg-white text-[#041E42] px-8 py-4 rounded-full font-bold text-lg hover:bg-slate-100 hover:scale-105 transition transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <ShoppingBag size={20} />
-            Order Your Piece - $50
-          </a>
+            {isLoading ? (
+              <>
+                <Loader2 size={20} className="animate-spin" />
+                Loading...
+              </>
+            ) : (
+              <>
+                <ShoppingBag size={20} />
+                Order Your Piece - $30
+              </>
+            )}
+          </button>
           <p className="mt-4 text-slate-400 text-sm">Free shipping to State College & beyond.</p>
         </div>
       </header>
@@ -116,13 +148,21 @@ export default function Home() {
           <div className="bg-white border-2 border-slate-200 p-8 rounded-3xl hover:border-[#041E42] transition group">
             <h3 className="text-2xl font-serif font-bold mb-2 text-[#041E42]">The Old Main Classic</h3>
             <p className="text-slate-500 mb-6 text-sm">Our signature Penn State landmark engraving.</p>
-            <div className="text-3xl font-bold mb-6">$50</div>
-            <a 
-              href={OLD_MAIN_LINK}
-              className="block text-center bg-[#041E42] text-white py-4 rounded-xl font-bold hover:bg-[#001433] transition"
+            <div className="text-3xl font-bold mb-6">$30</div>
+            <button
+              onClick={handleOldMainPurchase}
+              disabled={isLoading}
+              className="w-full text-center bg-[#041E42] text-white py-4 rounded-xl font-bold hover:bg-[#001433] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Buy Original
-            </a>
+              {isLoading ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                'Buy Original'
+              )}
+            </button>
           </div>
 
           {/* Option 2: Custom Upload */}
@@ -144,6 +184,15 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Error Message */}
+      {error && (
+        <div className="max-w-6xl mx-auto px-6 mb-6">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
+            {error}
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 py-12 px-6 text-center">
