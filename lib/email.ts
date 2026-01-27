@@ -11,12 +11,15 @@ const transporter = nodemailer.createTransport({
 });
 
 export interface EmailImageData {
-  originalUrl: string;
-  processedUrl: string;
+  originalUrl?: string;
+  processedUrl?: string;
   originalBuffer?: Buffer;
   processedBuffer?: Buffer;
   orderId: string;
   customerEmail?: string;
+  orderType?: 'custom-engraving' | 'old-main-classic';
+  productName?: string;
+  productPrice?: number;
 }
 
 /**
@@ -52,6 +55,11 @@ export async function sendPurchaseNotification(data: EmailImageData) {
       });
     }
 
+    const isCustomEngraving = data.orderType === 'custom-engraving' && data.originalUrl && data.processedUrl;
+    const productName = data.productName || (isCustomEngraving ? 'Custom Laser Engraving' : 'Old Main Classic');
+    const productPrice = data.productPrice || (isCustomEngraving ? 40.00 : 30.00);
+    const orderTitle = isCustomEngraving ? 'New Custom Engraving Order!' : 'New Old Main Classic Order!';
+
     // Create HTML email with images and links (for internal notifications)
     const htmlContent = `
       <!DOCTYPE html>
@@ -67,18 +75,24 @@ export async function sendPurchaseNotification(data: EmailImageData) {
             .links { margin: 20px 0; padding: 15px; background-color: white; border-radius: 8px; }
             .links a { color: #041E42; text-decoration: none; display: block; margin: 5px 0; }
             .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+            .order-info { background-color: white; padding: 15px; border-radius: 8px; margin: 15px 0; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
-              <h1>New Custom Engraving Order!</h1>
+              <h1>${orderTitle}</h1>
             </div>
             <div class="content">
-              <p>A new custom engraving order has been completed.</p>
-              <p><strong>Order ID:</strong> ${data.orderId}</p>
-              ${data.customerEmail ? `<p><strong>Customer Email:</strong> ${data.customerEmail}</p>` : ''}
+              <p>A new order has been completed.</p>
+              <div class="order-info">
+                <p><strong>Order ID:</strong> ${data.orderId}</p>
+                <p><strong>Product:</strong> ${productName}</p>
+                <p><strong>Price:</strong> $${productPrice.toFixed(2)}</p>
+                ${data.customerEmail ? `<p><strong>Customer Email:</strong> ${data.customerEmail}</p>` : ''}
+              </div>
               
+              ${isCustomEngraving ? `
               <div class="image-section">
                 <h3>Original Image</h3>
                 <img src="${data.originalUrl}" alt="Original Image" />
@@ -96,9 +110,10 @@ export async function sendPurchaseNotification(data: EmailImageData) {
                 <p><strong>Original:</strong> <a href="${data.originalUrl}" target="_blank">${data.originalUrl}</a></p>
                 <p><strong>Processed:</strong> <a href="${data.processedUrl}" target="_blank">${data.processedUrl}</a></p>
               </div>
+              ` : ''}
             </div>
             <div class="footer">
-              <p>NITTANY CRAFT - Custom Engraving Orders</p>
+              <p>NITTANY CRAFT - Order Notifications</p>
             </div>
           </div>
         </body>
@@ -135,7 +150,7 @@ export async function sendPurchaseNotification(data: EmailImageData) {
             </div>
             <div class="content">
               <p>Hello,</p>
-              <p>Thank you for your order! We've received your payment and your custom laser engraving is confirmed.</p>
+              <p>Thank you for your order! We've received your payment and your ${productName.toLowerCase()} is confirmed.</p>
               
               <div class="order-info">
                 <h3>Order Summary</h3>
@@ -150,11 +165,11 @@ export async function sendPurchaseNotification(data: EmailImageData) {
                   </tr>
                   <tr>
                     <td>Item:</td>
-                    <td>Custom Laser Engraving</td>
+                    <td>${productName}</td>
                   </tr>
                   <tr>
                     <td>Total Paid:</td>
-                    <td class="price">$40.00</td>
+                    <td class="price">$${productPrice.toFixed(2)}</td>
                   </tr>
                   <tr>
                     <td>Status:</td>
@@ -163,6 +178,7 @@ export async function sendPurchaseNotification(data: EmailImageData) {
                 </table>
               </div>
               
+              ${isCustomEngraving ? `
               <div class="image-section">
                 <h3>Your Custom Design Preview</h3>
                 <p>Here's a preview of your laser-engraved design:</p>
@@ -175,6 +191,11 @@ export async function sendPurchaseNotification(data: EmailImageData) {
                 <img src="${data.originalUrl}" alt="Original Image" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px;" />
                 <p><a href="${data.originalUrl}" target="_blank" style="color: #041E42; text-decoration: underline;">View Original Image</a></p>
               </div>
+              ` : `
+              <div class="order-info">
+                <p>Your Old Main Classic laser engraving will be crafted with precision and care. This signature Penn State landmark engraving captures every architectural detail of Penn State's iconic building.</p>
+              </div>
+              `}
               
               <div class="order-info">
                 <h3>What Happens Next?</h3>
@@ -192,11 +213,11 @@ export async function sendPurchaseNotification(data: EmailImageData) {
                 <p style="margin: 5px 0;"><strong>Order Reference:</strong> ${data.orderId}</p>
               </div>
               
-              <p>We appreciate your business and look forward to creating your custom laser engraving!</p>
+              <p>We appreciate your business and look forward to creating your ${isCustomEngraving ? 'custom laser engraving' : 'Old Main Classic'}!</p>
             </div>
             <div class="footer">
               <p style="font-weight: bold; color: #041E42;">NITTANY CRAFT</p>
-              <p>Custom Laser Engraving Orders</p>
+              <p>Laser Engraving Orders</p>
               <p style="margin-top: 10px; font-size: 11px; color: #999;">Not officially affiliated with Pennsylvania State University.</p>
             </div>
           </div>
@@ -214,7 +235,7 @@ export async function sendPurchaseNotification(data: EmailImageData) {
           transporter.sendMail({
             from: `"NITTANY CRAFT" <${process.env.GMAIL_USER}>`,
             to: email,
-            subject: `New Custom Engraving Order - ${data.orderId}`,
+            subject: `New Order - ${productName} - ${data.orderId}`,
             html: htmlContent,
             attachments: attachments.length > 0 ? attachments : undefined,
           })
