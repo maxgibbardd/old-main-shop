@@ -1,6 +1,7 @@
 // file: app/page.tsx
 import React from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 import { ShoppingBag, Star, ShieldCheck, Truck } from 'lucide-react';
 
 export default function Home() {
@@ -124,18 +125,13 @@ export default function Home() {
             <div className="text-3xl font-bold mb-6">$70</div>
             
             <div className="space-y-4">
-               <label className="block p-4 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:bg-slate-50 transition">
-                  <input type="file" className="hidden" accept="image/*" />
-                  <span className="text-sm text-slate-500 text-center block">Click to select your image</span>
-               </label>
-               
-               <a 
-                href={CUSTOM_ENGRAVE_LINK}
+               <Link 
+                href="/upload"
                 className="block text-center bg-[#041E42] text-white py-4 rounded-xl font-bold hover:bg-[#001433] transition"
               >
-                Purchase Custom Engraving
-              </a>
-              <p className="text-[10px] text-slate-400 text-center">After purchase, we will confirm your design via email.</p>
+                Upload & Preview Your Image
+              </Link>
+              <p className="text-[10px] text-slate-400 text-center">Upload your image to see a preview, then purchase when ready.</p>
             </div>
           </div>
         </div>
