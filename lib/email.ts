@@ -219,11 +219,11 @@ export async function sendPurchaseNotification(data: EmailImageData) {
                   </tr>
                   <tr>
                     <td>Item:</td>
-                    <td>Custom Laser Engraving</td>
+                    <td>${productName}</td>
                   </tr>
                   <tr>
                     <td>Total Paid:</td>
-                    <td class="price">$40.00</td>
+                    <td class="price">$${productPrice.toFixed(2)}</td>
                   </tr>
                   <tr>
                     <td>Status:</td>

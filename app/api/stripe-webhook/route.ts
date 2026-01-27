@@ -72,6 +72,28 @@ export async function POST(request: NextRequest) {
     const orderType = metadata.orderType || 'old-main-classic'; // Default to old-main-classic
     const customerEmail = fullSession.customer_email || fullSession.customer_details?.email || fullSession.customer_details?.email;
     
+    // Get the ACTUAL amount charged from Stripe (source of truth)
+    // amount_total is in cents, so convert to dollars
+    const actualAmountCharged = fullSession.amount_total ? fullSession.amount_total / 100 : null;
+    const amountSubtotal = fullSession.amount_subtotal ? fullSession.amount_subtotal / 100 : null;
+    const amountTax = (fullSession as any).amount_tax ? (fullSession as any).amount_tax / 100 : null;
+    
+    // Log amounts for verification
+    console.log('Payment amounts from Stripe:', {
+      amount_total: actualAmountCharged,
+      amount_subtotal: amountSubtotal,
+      amount_tax: amountTax,
+      metadata_price: metadata.price,
+    });
+    
+    // Use actual charged amount as primary source, fallback to metadata if needed
+    // This ensures emails always show what was actually charged
+    const productPrice = actualAmountCharged ?? (metadata.price ? parseFloat(metadata.price) : null);
+    
+    if (productPrice === null) {
+      console.error('⚠️ WARNING: Could not determine product price from Stripe session!');
+    }
+    
     // Extract shipping address from Stripe session
     // When shipping_address_collection is enabled, Stripe stores it in the 'shipping' property
     // But it might be null if customer didn't complete shipping form
@@ -213,12 +235,20 @@ export async function POST(request: NextRequest) {
           original: originalUrl,
           processed: processedUrl,
           customerEmail: customerEmail,
+          actualAmountCharged: productPrice,
         });
 
-        // Get price from metadata or use default
-        const priceFromMetadata = metadata.price ? parseFloat(metadata.price) : 70.00;
+        // Validate price was found
+        if (productPrice === null) {
+          console.error('ERROR: Product price is null, cannot send email');
+          return NextResponse.json(
+            { error: 'Product price not found in Stripe session' },
+            { status: 400 }
+          );
+        }
 
         // Send email notification for custom engraving
+        // Use actual charged amount (verified from Stripe)
         const emailResult = await sendPurchaseNotification({
           originalUrl: originalUrl,
           processedUrl: processedUrl,
@@ -228,7 +258,7 @@ export async function POST(request: NextRequest) {
           customerEmail: customerEmail || undefined,
           orderType: 'custom-engraving',
           productName: 'Custom Laser Engraving',
-          productPrice: priceFromMetadata,
+          productPrice: productPrice, // Actual amount charged from Stripe
           shippingAddress: shippingAddress,
           shippingName: shippingName,
         });
@@ -252,18 +282,27 @@ export async function POST(request: NextRequest) {
         });
       } else {
         // Old Main Classic order - no images
-        console.log('Processing Old Main Classic order');
+        console.log('Processing Old Main Classic order', {
+          actualAmountCharged: productPrice,
+        });
 
-        // Get price from metadata or use default
-        const priceFromMetadata = metadata.price ? parseFloat(metadata.price) : 50.00;
+        // Validate price was found
+        if (productPrice === null) {
+          console.error('ERROR: Product price is null, cannot send email');
+          return NextResponse.json(
+            { error: 'Product price not found in Stripe session' },
+            { status: 400 }
+          );
+        }
 
         // Send email notification for Old Main Classic
+        // Use actual charged amount (verified from Stripe)
         const emailResult = await sendPurchaseNotification({
           orderId: orderId,
           customerEmail: customerEmail || undefined,
           orderType: 'old-main-classic',
           productName: 'Old Main Classic',
-          productPrice: priceFromMetadata,
+          productPrice: productPrice, // Actual amount charged from Stripe
           shippingAddress: shippingAddress,
           shippingName: shippingName,
         });
