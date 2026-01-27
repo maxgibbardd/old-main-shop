@@ -54,19 +54,91 @@ export async function POST(request: NextRequest) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
     
-    // Get metadata from Stripe session
-    const metadata = session.metadata || {};
-    const orderId = session.id; // Use Stripe session ID as order ID
-    const orderType = metadata.orderType || 'old-main-classic'; // Default to old-main-classic
-    const customerEmail = session.customer_email || session.customer_details?.email || session.customer_details?.email;
+    // Retrieve the full session to get shipping details
+    // The webhook event might not include shipping_details, so we need to fetch it
+    const fullSession = await stripe.checkout.sessions.retrieve(session.id);
     
-    // Log customer email for debugging
+    // Debug: Log the entire session to see what's available
+    console.log('Full session keys:', Object.keys(fullSession));
+    console.log('Session shipping property:', (fullSession as any).shipping);
+    console.log('Session shipping_details property:', (fullSession as any).shipping_details);
+    console.log('Session shipping_address_collection:', (fullSession as any).shipping_address_collection);
+    console.log('Session collected_information:', JSON.stringify((fullSession as any).collected_information, null, 2));
+    console.log('Session customer_details:', JSON.stringify(fullSession.customer_details, null, 2));
+    
+    // Get metadata from Stripe session
+    const metadata = fullSession.metadata || {};
+    const orderId = fullSession.id; // Use Stripe session ID as order ID
+    const orderType = metadata.orderType || 'old-main-classic'; // Default to old-main-classic
+    const customerEmail = fullSession.customer_email || fullSession.customer_details?.email || fullSession.customer_details?.email;
+    
+    // Extract shipping address from Stripe session
+    // When shipping_address_collection is enabled, Stripe stores it in the 'shipping' property
+    // But it might be null if customer didn't complete shipping form
+    const shipping = (fullSession as any).shipping;
+    const collectedInfo = (fullSession as any).collected_information;
+    
+    // Debug: Log the entire shipping object and collected_information
+    console.log('Shipping object from Stripe:', JSON.stringify(shipping, null, 2));
+    console.log('Collected information:', JSON.stringify(collectedInfo, null, 2));
+    
+    // Extract shipping address - try shipping property first, then check collected_information
+    let shippingAddress = null;
+    let shippingName = '';
+    
+    if (shipping?.address) {
+      // Standard shipping property (this is where Stripe stores it when shipping_address_collection is used)
+      shippingAddress = {
+        line1: shipping.address.line1 || '',
+        line2: shipping.address.line2 || '',
+        city: shipping.address.city || '',
+        state: shipping.address.state || '',
+        postal_code: shipping.address.postal_code || '',
+        country: shipping.address.country || '',
+      };
+      shippingName = shipping.name || '';
+      console.log('✅ Found shipping address in shipping property');
+    } else if (collectedInfo?.shipping_address) {
+      // Check collected_information for shipping address
+      shippingAddress = {
+        line1: collectedInfo.shipping_address.line1 || '',
+        line2: collectedInfo.shipping_address.line2 || '',
+        city: collectedInfo.shipping_address.city || '',
+        state: collectedInfo.shipping_address.state || '',
+        postal_code: collectedInfo.shipping_address.postal_code || '',
+        country: collectedInfo.shipping_address.country || '',
+      };
+      shippingName = collectedInfo.shipping_address.name || '';
+      console.log('✅ Found shipping address in collected_information');
+    } else if (fullSession.customer_details?.address) {
+      // Fallback to customer_details address if shipping not collected separately
+      shippingAddress = {
+        line1: fullSession.customer_details.address.line1 || '',
+        line2: fullSession.customer_details.address.line2 || '',
+        city: fullSession.customer_details.address.city || '',
+        state: fullSession.customer_details.address.state || '',
+        postal_code: fullSession.customer_details.address.postal_code || '',
+        country: fullSession.customer_details.address.country || '',
+      };
+      shippingName = fullSession.customer_details.name || '';
+      console.log('✅ Found address in customer_details (fallback)');
+    } else {
+      console.warn('⚠️ No shipping address found in any location!');
+      console.warn('This means the customer did not enter a shipping address during checkout.');
+      console.warn('Please verify that Stripe Checkout is showing the shipping address form.');
+    }
+    
+    // Log customer email and shipping for debugging
     console.log('Processing order:', {
       orderId: orderId,
       orderType: orderType,
-      customer_email: session.customer_email,
-      customer_details_email: session.customer_details?.email,
+      customer_email: fullSession.customer_email,
+      customer_details_email: fullSession.customer_details?.email,
       final_customerEmail: customerEmail,
+      hasShippingAddress: !!shippingAddress,
+      shippingAddress: shippingAddress,
+      shippingName: shippingName,
+      shippingExists: !!shipping,
     });
 
     try {
@@ -157,6 +229,8 @@ export async function POST(request: NextRequest) {
           orderType: 'custom-engraving',
           productName: 'Custom Laser Engraving',
           productPrice: priceFromMetadata,
+          shippingAddress: shippingAddress,
+          shippingName: shippingName,
         });
         
         console.log('Email send result:', {
@@ -190,6 +264,8 @@ export async function POST(request: NextRequest) {
           orderType: 'old-main-classic',
           productName: 'Old Main Classic',
           productPrice: priceFromMetadata,
+          shippingAddress: shippingAddress,
+          shippingName: shippingName,
         });
         
         console.log('Email send result:', {

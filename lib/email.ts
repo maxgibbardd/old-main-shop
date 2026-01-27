@@ -10,6 +10,15 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export interface ShippingAddress {
+  line1: string;
+  line2?: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+}
+
 export interface EmailImageData {
   originalUrl?: string;
   processedUrl?: string;
@@ -20,6 +29,8 @@ export interface EmailImageData {
   orderType?: 'custom-engraving' | 'old-main-classic';
   productName?: string;
   productPrice?: number;
+  shippingAddress?: ShippingAddress | null;
+  shippingName?: string;
 }
 
 /**
@@ -55,6 +66,37 @@ export async function sendPurchaseNotification(data: EmailImageData) {
       });
     }
 
+    // Prepare variables for email templates
+    const isCustomEngraving = data.orderType === 'custom-engraving' && data.originalUrl && data.processedUrl;
+    const productName = data.productName || (isCustomEngraving ? 'Custom Laser Engraving' : 'Old Main Classic');
+    const productPrice = data.productPrice || (isCustomEngraving ? 40.00 : 30.00);
+    const orderTitle = isCustomEngraving ? 'New Custom Engraving Order!' : 'New Old Main Classic Order!';
+
+    // Format shipping address for display
+    const formatShippingAddress = (address: ShippingAddress | null | undefined, name: string | undefined) => {
+      if (!address) {
+        console.log('No shipping address provided to email function');
+        return '';
+      }
+      const lines = [
+        name || '',
+        address.line1,
+        address.line2,
+        `${address.city}, ${address.state} ${address.postal_code}`,
+        address.country,
+      ].filter(Boolean);
+      const formatted = lines.join('<br>');
+      console.log('Formatted shipping address:', formatted);
+      return formatted;
+    };
+    
+    const shippingAddressFormatted = formatShippingAddress(data.shippingAddress, data.shippingName);
+    console.log('Shipping address data received:', {
+      shippingAddress: data.shippingAddress,
+      shippingName: data.shippingName,
+      formatted: shippingAddressFormatted,
+    });
+
     // Create HTML email with images and links (for internal notifications)
     const htmlContent = `
       <!DOCTYPE html>
@@ -69,6 +111,10 @@ export async function sendPurchaseNotification(data: EmailImageData) {
             .image-section img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; margin: 10px 0; }
             .links { margin: 20px 0; padding: 15px; background-color: white; border-radius: 8px; }
             .links a { color: #041E42; text-decoration: none; display: block; margin: 5px 0; }
+            .order-info { margin: 20px 0; padding: 15px; background-color: white; border-radius: 8px; }
+            .shipping-info { margin: 20px 0; padding: 20px; background-color: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; }
+            .shipping-info h3 { margin-top: 0; color: #856404; font-size: 18px; }
+            .shipping-info p { margin: 10px 0; color: #856404; font-size: 14px; line-height: 1.8; }
             .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
           </style>
         </head>
@@ -78,10 +124,27 @@ export async function sendPurchaseNotification(data: EmailImageData) {
               <h1>New Custom Engraving Order!</h1>
             </div>
             <div class="content">
-              <p>A new custom engraving order has been completed.</p>
-              <p><strong>Order ID:</strong> ${data.orderId}</p>
-              ${data.customerEmail ? `<p><strong>Customer Email:</strong> ${data.customerEmail}</p>` : ''}
+              <p>A new order has been completed.</p>
               
+              <!-- SHIPPING ADDRESS - MOST IMPORTANT FOR INTERNAL TEAM -->
+              <div class="shipping-info">
+                <h3>📍 SHIPPING ADDRESS (REQUIRED FOR FULFILLMENT)</h3>
+                ${shippingAddressFormatted ? `
+                  <p style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">${shippingAddressFormatted}</p>
+                ` : `
+                  <p style="color: #dc3545; font-weight: bold; font-size: 16px;">⚠️ WARNING: No shipping address provided!</p>
+                  <p style="color: #856404;">Please contact the customer to obtain shipping address before fulfilling this order.</p>
+                `}
+              </div>
+              
+              <div class="order-info">
+                <p><strong>Order ID:</strong> ${data.orderId}</p>
+                <p><strong>Product:</strong> ${productName}</p>
+                <p><strong>Price:</strong> $${productPrice.toFixed(2)}</p>
+                ${data.customerEmail ? `<p><strong>Customer Email:</strong> ${data.customerEmail}</p>` : ''}
+              </div>
+              
+              ${isCustomEngraving ? `
               <div class="image-section">
                 <h3>Original Image</h3>
                 <img src="${data.originalUrl}" alt="Original Image" />
@@ -99,6 +162,7 @@ export async function sendPurchaseNotification(data: EmailImageData) {
                 <p><strong>Original:</strong> <a href="${data.originalUrl}" target="_blank">${data.originalUrl}</a></p>
                 <p><strong>Processed:</strong> <a href="${data.processedUrl}" target="_blank">${data.processedUrl}</a></p>
               </div>
+              ` : ''}
             </div>
             <div class="footer">
               <p>NITTANY CRAFT - Custom Engraving Orders</p>
@@ -126,6 +190,8 @@ export async function sendPurchaseNotification(data: EmailImageData) {
             .order-info td { padding: 8px 0; border-bottom: 1px solid #eee; }
             .order-info td:first-child { font-weight: bold; width: 40%; }
             .price { font-size: 24px; font-weight: bold; color: #041E42; }
+            .shipping-info { background-color: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+            .shipping-info h3 { margin-top: 0; color: #041E42; }
             .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
             .contact { background-color: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0; }
           </style>
@@ -166,6 +232,12 @@ export async function sendPurchaseNotification(data: EmailImageData) {
                 </table>
               </div>
               
+              <div class="shipping-info">
+                <h3>Shipping Address</h3>
+                ${shippingAddressFormatted ? `<p>${shippingAddressFormatted}</p>` : '<p style="color: red;">⚠️ No shipping address provided</p>'}
+              </div>
+              
+              ${isCustomEngraving ? `
               <div class="image-section">
                 <h3>Your Custom Design Preview</h3>
                 <p>Here's a preview of your laser-engraved design:</p>
@@ -178,6 +250,11 @@ export async function sendPurchaseNotification(data: EmailImageData) {
                 <img src="${data.originalUrl}" alt="Original Image" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px;" />
                 <p><a href="${data.originalUrl}" target="_blank" style="color: #041E42; text-decoration: underline;">View Original Image</a></p>
               </div>
+              ` : `
+              <div class="order-info">
+                <p>Your Old Main Classic laser engraving will be crafted with precision and care. This signature Penn State landmark engraving captures every architectural detail of Penn State's iconic building.</p>
+              </div>
+              `}
               
               <div class="order-info">
                 <h3>What Happens Next?</h3>

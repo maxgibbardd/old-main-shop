@@ -98,6 +98,21 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'payment',
+      shipping_address_collection: {
+        allowed_countries: ['US'], // Only allow US addresses for now
+      },
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 0, // Free shipping
+              currency: 'usd',
+            },
+            display_name: 'Free Shipping',
+          },
+        },
+      ],
       success_url: `${request.headers.get('origin') || 'https://your-domain.vercel.app'}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${request.headers.get('origin') || 'https://your-domain.vercel.app'}/upload?canceled=true`,
       metadata: {
