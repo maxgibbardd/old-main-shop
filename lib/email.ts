@@ -11,12 +11,15 @@ const transporter = nodemailer.createTransport({
 });
 
 export interface EmailImageData {
-  originalUrl: string;
-  processedUrl: string;
+  originalUrl?: string;
+  processedUrl?: string;
   originalBuffer?: Buffer;
   processedBuffer?: Buffer;
   orderId: string;
   customerEmail?: string;
+  orderType?: 'custom-engraving' | 'old-main-classic';
+  productName?: string;
+  productPrice?: number;
 }
 
 /**

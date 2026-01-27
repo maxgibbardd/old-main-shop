@@ -153,6 +153,7 @@ export default function UploadPage() {
       formData.append('processedImage', processedImageBase64);
       formData.append('originalMimeType', selectedFile.type);
       formData.append('processedMimeType', 'image/png');
+      formData.append('price', '70'); // $70.00 for custom engraving
 
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
@@ -439,7 +440,7 @@ export default function UploadPage() {
                   disabled={isPreparingPurchase || !originalImageBase64 || !processedImageBase64}
                   className="flex items-center gap-2 bg-white border-2 border-[#041E42] text-[#041E42] px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isPreparingPurchase ? 'Preparing Purchase...' : 'Purchase Custom Engraving - $40'}
+                  {isPreparingPurchase ? 'Preparing Purchase...' : 'Purchase Custom Engraving - $70'}
                 </button>
               </div>
               

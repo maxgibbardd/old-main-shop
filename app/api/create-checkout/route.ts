@@ -32,10 +32,22 @@ export async function POST(request: NextRequest) {
     const processedImageBase64 = formData.get('processedImage') as string;
     const originalMimeType = formData.get('originalMimeType') as string || 'image/png';
     const processedMimeType = formData.get('processedMimeType') as string || 'image/png';
+    
+    // Get price from form data (in dollars, e.g., "70" for $70.00)
+    const priceString = formData.get('price') as string;
+    const price = priceString ? parseFloat(priceString) : 70.00; // Default to $70 if not provided
+    const unitAmount = Math.round(price * 100); // Convert to cents
 
     if (!originalImageBase64 || !processedImageBase64) {
       return NextResponse.json(
         { error: 'Missing image data' },
+        { status: 400 }
+      );
+    }
+
+    if (isNaN(price) || price <= 0) {
+      return NextResponse.json(
+        { error: 'Invalid price provided' },
         { status: 400 }
       );
     }
@@ -80,7 +92,7 @@ export async function POST(request: NextRequest) {
               name: 'Custom Laser Engraving',
               description: 'Custom photo laser-engraved on wood',
             },
-            unit_amount: 4000, // $40.00
+            unit_amount: unitAmount, // Dynamic price in cents
           },
           quantity: 1,
         },
@@ -90,6 +102,7 @@ export async function POST(request: NextRequest) {
       cancel_url: `${request.headers.get('origin') || 'https://your-domain.vercel.app'}/upload?canceled=true`,
       metadata: {
         orderType: 'custom-engraving',
+        price: price.toString(), // Store price in metadata for email
         originalUrl: originalBlob.url,
         processedUrl: processedBlob.url,
         // Store base64 as fallback (if URLs are too long for metadata)
