@@ -6,7 +6,7 @@ import { ShoppingBag, Star, ShieldCheck, Truck } from 'lucide-react';
 
 export default function Home() {
   // REPLACE THIS WITH YOUR ACTUAL STRIPE PAYMENT LINK
-  const STRIPE_LINK = "https://buy.stripe.com/test_eVqfZhfOs7rL58UbfF4ko00"; 
+  const STRIPE_LINK = "https://buy.stripe.com/00wdRbeuEewc3Hc14C3Nm03"; 
   const OLD_MAIN_LINK = "https://buy.stripe.com/00wdRbeuEewc3Hc14C3Nm03";
   const CUSTOM_ENGRAVE_LINK = "https://buy.stripe.com/fZu7sNfyIfAgb9E7t03Nm02";
 
