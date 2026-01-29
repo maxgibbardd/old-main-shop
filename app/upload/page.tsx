@@ -146,29 +146,68 @@ export default function UploadPage() {
     setError(null);
 
     try {
-      // Create Stripe Checkout Session with image data
-      // This will save images and create checkout session with metadata
-      const formData = new FormData();
-      formData.append('originalImage', originalImageBase64);
-      formData.append('processedImage', processedImageBase64);
-      formData.append('originalMimeType', selectedFile.type);
-      formData.append('processedMimeType', 'image/png');
-      formData.append('price', '70'); // $70.00 for custom engraving
+      // Step 1: Upload images to blob storage first (to avoid request size limits)
+      // Convert processed base64 image to File/Blob for upload
+      const processedImageBlob = await fetch(`data:image/png;base64,${processedImageBase64}`).then(r => r.blob());
+      const processedImageFile = new File([processedImageBlob], 'processed.png', { type: 'image/png' });
 
-      const response = await fetch('/api/create-checkout', {
+      const uploadFormData = new FormData();
+      uploadFormData.append('originalImage', selectedFile); // Use the original file directly
+      uploadFormData.append('processedImage', processedImageFile);
+      uploadFormData.append('originalMimeType', selectedFile.type);
+      uploadFormData.append('processedMimeType', 'image/png');
+
+      const uploadResponse = await fetch('/api/upload-images', {
         method: 'POST',
-        body: formData,
+        body: uploadFormData,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session');
+      if (!uploadResponse.ok) {
+        // Try to parse error, but handle HTML error pages gracefully
+        let errorMessage = 'Failed to upload images';
+        try {
+          const errorData = await uploadResponse.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          // If response is not JSON (e.g., HTML error page), use status text
+          errorMessage = `Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
+      const uploadData = await uploadResponse.json();
+
+      // Step 2: Create Stripe Checkout Session with image URLs
+      const checkoutFormData = new FormData();
+      checkoutFormData.append('originalImageUrl', uploadData.originalUrl);
+      checkoutFormData.append('processedImageUrl', uploadData.processedUrl);
+      checkoutFormData.append('originalMimeType', selectedFile.type);
+      checkoutFormData.append('processedMimeType', 'image/png');
+      checkoutFormData.append('price', '70'); // $70.00 for custom engraving
+
+      const checkoutResponse = await fetch('/api/create-checkout', {
+        method: 'POST',
+        body: checkoutFormData,
+      });
+
+      if (!checkoutResponse.ok) {
+        // Try to parse error, but handle HTML error pages gracefully
+        let errorMessage = 'Failed to create checkout session';
+        try {
+          const errorData = await checkoutResponse.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          // If response is not JSON (e.g., HTML error page), use status text
+          errorMessage = `Checkout failed: ${checkoutResponse.status} ${checkoutResponse.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      const checkoutData = await checkoutResponse.json();
+
       // Redirect to Stripe Checkout
-      if (data.url) {
-        window.location.href = data.url;
+      if (checkoutData.url) {
+        window.location.href = checkoutData.url;
       } else {
         throw new Error('No checkout URL received');
       }

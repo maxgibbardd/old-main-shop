@@ -30,7 +30,14 @@ export async function POST(request: NextRequest) {
     // Get price from request body (in dollars, e.g., "50" for $50.00)
     const body = await request.json();
     const priceString = body.price;
-    const price = priceString ? parseFloat(priceString) : 50.00; // Default to $50 if not provided
+    const testMode = body.testMode === true; // Check for test mode flag
+    let price = priceString ? parseFloat(priceString) : 50.00; // Default to $50 if not provided
+    
+    // Override price to 51 cents in test mode
+    if (testMode) {
+      price = 0.51;
+    }
+    
     const unitAmount = Math.round(price * 100); // Convert to cents
 
     if (isNaN(price) || price <= 0) {
@@ -77,6 +84,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         orderType: 'old-main-classic',
         price: price.toString(), // Store price in metadata for email
+        testMode: testMode ? 'true' : 'false', // Store test mode flag
       },
     });
 
