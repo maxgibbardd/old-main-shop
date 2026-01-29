@@ -2,15 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { put } from '@vercel/blob';
 
-// This is the key part for Next.js 13/14/15
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '20mb', // Adjust this to 10mb or 20mb
-    },
-  },
-};
-
 // Initialize Stripe lazily (only when needed)
 function getStripe() {
   if (!process.env.STRIPE_SECRET_KEY) {
