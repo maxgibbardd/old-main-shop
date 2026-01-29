@@ -6,7 +6,7 @@ import { put } from '@vercel/blob';
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '200mb', // Adjust this to 10mb or 20mb
+      sizeLimit: 'mb', // Adjust this to 10mb or 20mb
     },
   },
 };
