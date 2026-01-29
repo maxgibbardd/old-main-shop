@@ -103,61 +103,55 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Product Showcase */}
-      <section className="max-w-6xl mx-auto py-20 px-6 grid md:grid-cols-2 gap-16 items-center">
-        <div className="grid grid-cols-2 gap-4 md:gap-8 relative group">
-          {/* First Image: Stacked - Square & Large */}
-          <div className="relative bg-white p-3 rounded-2xl shadow-2xl -rotate-3 group-hover:rotate-0 transition duration-500 z-20">
-            <div className="aspect-square w-full overflow-hidden rounded-xl bg-slate-100">
-               <img 
-                src="/Stack_Picture.png" 
-                alt="Stacked wooden engravings" 
-                className="w-full h-full object-cover scale-105 group-hover:scale-100 transition duration-500"
-              />
-            </div>
+      {/* Product Showcase - UPDATED WITH TWO IMAGES */}
+      <section className="max-w-6xl mx-auto py-20 px-6 grid md:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-2 gap-4 relative group">
+          {/* First Image: Stacked */}
+          <div className="relative bg-white p-2 rounded-xl shadow-lg -rotate-2 group-hover:rotate-0 transition duration-500">
+             <img 
+              src="/Stack_Picture.png" 
+              alt="Stacked wooden engravings" 
+              className="rounded-lg w-full h-full object-cover"
+            />
           </div>
-
-          {/* Second Image: Hanging - Square & Large */}
-          <div className="relative bg-white p-3 rounded-2xl shadow-2xl rotate-6 group-hover:rotate-0 transition duration-500 mt-16 z-10">
-            <div className="aspect-square w-full overflow-hidden rounded-xl bg-slate-100">
-               <img 
-                src="/Hanging_Image.png" 
-                alt="Old Main engraving hanging on a wall" 
-                className="w-full h-full object-cover scale-105 group-hover:scale-100 transition duration-500"
-              />
-            </div>
+          {/* Second Image: Hanging */}
+          <div className="relative bg-white p-2 rounded-xl shadow-lg rotate-3 group-hover:rotate-0 transition duration-500 mt-8">
+             <img 
+              src="/Hanging_Image.png" 
+              alt="Old Main engraving hanging on a wall" 
+              className="rounded-lg w-full h-full object-cover"
+            />
           </div>
-          
           {/* Background decorative glow */}
-          <div className="absolute -inset-10 bg-[#041E42] rounded-full opacity-5 group-hover:opacity-10 transition blur-3xl -z-10"></div>
+          <div className="absolute -inset-4 bg-[#041E42] rounded-2xl opacity-5 group-hover:opacity-10 transition blur-2xl -z-10"></div>
         </div>
 
-        <div className="pl-4">
-          <h3 className="text-4xl font-serif font-bold text-[#041E42] mb-6">Precision Meets Tradition.</h3>
-          <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+        <div>
+          <h3 className="text-3xl font-serif font-bold text-[#041E42] mb-6">Precision Meets Tradition.</h3>
+          <p className="text-slate-600 mb-6 leading-relaxed">
             We take the iconic outline of Old Main and laser-burn it onto sustainably sourced maple. The result is a high-contrast, tactile piece of art that ages beautifully.
           </p>
           
-          <ul className="space-y-6 mb-10">
-            <li className="flex items-start gap-4">
-              <div className="bg-slate-100 p-3 rounded-full text-[#041E42] shadow-sm"><Star size={22}/></div>
+          <ul className="space-y-4 mb-8">
+            <li className="flex items-start gap-3">
+              <div className="bg-slate-100 p-2 rounded-full text-[#041E42]"><Star size={18}/></div>
               <div>
-                <strong className="block text-[#041E42] text-lg">High-Definition Detail</strong>
-                <span className="text-slate-500">Captures the clock tower and columns perfectly.</span>
+                <strong className="block text-[#041E42]">High-Definition Detail</strong>
+                <span className="text-slate-500 text-sm">Captures the clock tower and columns perfectly.</span>
               </div>
             </li>
-            <li className="flex items-start gap-4">
-              <div className="bg-slate-100 p-3 rounded-full text-[#041E42] shadow-sm"><ShieldCheck size={22}/></div>
+            <li className="flex items-start gap-3">
+              <div className="bg-slate-100 p-2 rounded-full text-[#041E42]"><ShieldCheck size={18}/></div>
               <div>
-                <strong className="block text-[#041E42] text-lg">Protected Finish</strong>
-                <span className="text-slate-500">Sealed to protect against humidity and UV light.</span>
+                <strong className="block text-[#041E42]">Protected Finish</strong>
+                <span className="text-slate-500 text-sm">Sealed to protect against humidity and UV light.</span>
               </div>
             </li>
-            <li className="flex items-start gap-4">
-              <div className="bg-slate-100 p-3 rounded-full text-[#041E42] shadow-sm"><Truck size={22}/></div>
+            <li className="flex items-start gap-3">
+              <div className="bg-slate-100 p-2 rounded-full text-[#041E42]"><Truck size={18}/></div>
               <div>
-                <strong className="block text-[#041E42] text-lg">Safe Shipping</strong>
-                <span className="text-slate-500">Packaged securely to arrive in pristine condition.</span>
+                <strong className="block text-[#041E42]">Safe Shipping</strong>
+                <span className="text-slate-500 text-sm">Packaged securely to arrive in pristine condition.</span>
               </div>
             </li>
           </ul>

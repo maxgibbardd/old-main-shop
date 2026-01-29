@@ -156,13 +156,7 @@ export default function Home() {
             <li className="flex items-start gap-4">
               <div className="bg-slate-100 p-3 rounded-full text-[#041E42] shadow-sm"><Truck size={22}/></div>
               <div>
-                <strong className="block text-[#041E42] text-lg">Safe Shipping</strong>
-                <span className="text-slate-500">Packaged securely to arrive in pristine condition.</span>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </section>
+                <strong className="block text-[#041E42] text
 
       {/* Two-Option Selection Section */}
       <section className="max-w-6xl mx-auto py-20 px-6">
