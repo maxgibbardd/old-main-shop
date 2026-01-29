@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
         originalUrl: originalBlob.url,
         processedUrl: processedBlob.url,
         // Store base64 as fallback (if URLs are too long for metadata)
-        // originalImage: originalImageBase64.substring(0, 500), // Truncate if needed
+        originalImage: originalImageBase64.substring(0, 500), // Truncate if needed
         // processedImage: processedImageBase64.substring(0, 500),
         originalMimeType: originalMimeType,
         processedMimeType: processedMimeType,
