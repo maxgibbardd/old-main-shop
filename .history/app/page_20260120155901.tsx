@@ -1,77 +1,37 @@
-'use client';
-
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { ShoppingBag, Star, ShieldCheck, Truck, Loader2 } from 'lucide-react';
+// file: app/page.tsx
+import React from 'react';
+import Head from 'next/head';
+import { ShoppingBag, Star, ShieldCheck, Truck } from 'lucide-react';
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleOldMainPurchase = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/create-checkout-old-main', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ price: '50' }), // $50.00 for Old Main Classic
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session');
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('No checkout URL received');
-      }
-    } catch (err: any) {
-      setError(err.message || 'Failed to start checkout');
-      setIsLoading(false);
-      console.error('Checkout error:', err);
-    }
-  };
+  // REPLACE THIS WITH YOUR ACTUAL STRIPE PAYMENT LINK
+  const STRIPE_LINK = "https://buy.stripe.com/test_eVqfZhfOs7rL58UbfF4ko00"; 
+  const OLD_MAIN_LINK = "https://buy.stripe.com/00wdRbeuEewc3Hc14C3Nm03";
+  const CUSTOM_ENGRAVE_LINK = "https://buy.stripe.com/fZu7sNfyIfAgb9E7t03Nm02";
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+      <Head>
+        <title>Old Main | Laser Engraved Collection</title>
+        <meta name="description" content="Premium laser engraved wood art of Penn State's Old Main." />
+      </Head>
+
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-[#041E42] text-white py-4 px-6 shadow-md">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <div className="flex items-center">
-            <img 
-              src="/favicon.ico" 
-              alt="Nittany Craft Logo" 
-              className="h-20 w-auto" 
-            />
-          </div>
-
-          <button
-            onClick={handleOldMainPurchase}
-            disabled={isLoading}
-            className="bg-white text-[#041E42] px-5 py-2 rounded-full font-medium hover:bg-slate-100 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          <h1 className="text-xl font-serif font-bold tracking-wider">NITTANY CRAFT.</h1>
+          <a 
+            href={STRIPE_LINK}
+            className="bg-white text-[#041E42] px-5 py-2 rounded-full font-medium hover:bg-slate-100 transition text-sm"
           >
-            {isLoading ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                Loading...
-              </>
-            ) : (
-              'Buy Now'
-            )}
-          </button>
+            Buy Now
+          </a>
         </div>
       </nav>
 
       {/* Hero Section */}
       <header className="relative bg-[#041E42] text-white py-24 px-6 text-center overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[url('/noise.png')]"></div>
+        <div className="absolute inset-0 opacity-10 bg-[url('/noise.png')]"></div> {/* Texture overlay if available */}
         <div className="relative max-w-4xl mx-auto z-10">
           <span className="uppercase tracking-[0.2em] text-slate-300 text-sm font-semibold mb-4 block">
             Limited Edition Woodwork
@@ -82,50 +42,30 @@ export default function Home() {
           <p className="text-lg md:text-xl text-slate-200 max-w-2xl mx-auto mb-10 leading-relaxed">
             Bring the heart of Happy Valley into your home. A precision laser-cut masterpiece crafted from premium hardwood, capturing every architectural detail of Penn State's iconic landmark.
           </p>
-          <button
-            onClick={handleOldMainPurchase}
-            disabled={isLoading}
-            className="inline-flex items-center gap-2 bg-white text-[#041E42] px-8 py-4 rounded-full font-bold text-lg hover:bg-slate-100 hover:scale-105 transition transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          <a 
+            href={STRIPE_LINK}
+            className="inline-flex items-center gap-2 bg-white text-[#041E42] px-8 py-4 rounded-full font-bold text-lg hover:bg-slate-100 hover:scale-105 transition transform shadow-lg"
           >
-            {isLoading ? (
-              <>
-                <Loader2 size={20} className="animate-spin" />
-                Loading...
-              </>
-            ) : (
-              <>
-                <ShoppingBag size={20} />
-                Order Your Piece - $50
-              </>
-            )}
-          </button>
+            <ShoppingBag size={20} />
+            Order Your Piece - $50
+          </a>
           <p className="mt-4 text-slate-400 text-sm">Free shipping to State College & beyond.</p>
         </div>
       </header>
 
-      {/* Product Showcase - UPDATED WITH TWO IMAGES */}
+      {/* Product Showcase */}
       <section className="max-w-6xl mx-auto py-20 px-6 grid md:grid-cols-2 gap-12 items-center">
-        <div className="grid grid-cols-2 gap-4 relative group">
-          {/* First Image: Stacked */}
-          <div className="relative bg-white p-2 rounded-xl shadow-lg -rotate-2 group-hover:rotate-0 transition duration-500">
+        <div className="relative group">
+          <div className="absolute -inset-2 bg-[#041E42] rounded-2xl opacity-10 group-hover:opacity-20 transition blur-lg"></div>
+          {/* PLACEHOLDER FOR THE IMAGE */}
+          <div className="relative bg-white p-4 rounded-2xl shadow-xl rotate-1 group-hover:rotate-0 transition duration-500">
              <img 
-              src="/Stack_Picture.png" 
-              alt="Stacked wooden engravings" 
-              className="rounded-lg w-full h-full object-cover"
+              src="/old-main-wood.jpg" 
+              alt="Laser engraved wooden Old Main" 
+              className="rounded-lg w-full h-auto object-cover grayscale-[20%] group-hover:grayscale-0 transition"
             />
           </div>
-          {/* Second Image: Hanging */}
-          <div className="relative bg-white p-2 rounded-xl shadow-lg rotate-3 group-hover:rotate-0 transition duration-500 mt-8">
-             <img 
-              src="/Hanging_Image.png" 
-              alt="Old Main engraving hanging on a wall" 
-              className="rounded-lg w-full h-full object-cover"
-            />
-          </div>
-          {/* Background decorative glow */}
-          <div className="absolute -inset-4 bg-[#041E42] rounded-2xl opacity-5 group-hover:opacity-10 transition blur-2xl -z-10"></div>
         </div>
-
         <div>
           <h3 className="text-3xl font-serif font-bold text-[#041E42] mb-6">Precision Meets Tradition.</h3>
           <p className="text-slate-600 mb-6 leading-relaxed">
@@ -163,26 +103,20 @@ export default function Home() {
         <h2 className="text-4xl font-serif font-bold text-center text-[#041E42] mb-12">Choose Your Canvas</h2>
         
         <div className="grid md:grid-cols-2 gap-8">
+          {/* Option 1: The Classic Old Main */}
           <div className="bg-white border-2 border-slate-200 p-8 rounded-3xl hover:border-[#041E42] transition group">
             <h3 className="text-2xl font-serif font-bold mb-2 text-[#041E42]">The Old Main Classic</h3>
             <p className="text-slate-500 mb-6 text-sm">Our signature Penn State landmark engraving.</p>
             <div className="text-3xl font-bold mb-6">$50</div>
-            <button
-              onClick={handleOldMainPurchase}
-              disabled={isLoading}
-              className="w-full text-center bg-[#041E42] text-white py-4 rounded-xl font-bold hover:bg-[#001433] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            <a 
+              href={OLD_MAIN_LINK}
+              className="block text-center bg-[#041E42] text-white py-4 rounded-xl font-bold hover:bg-[#001433] transition"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                'Buy Original'
-              )}
-            </button>
+              Buy Original
+            </a>
           </div>
 
+          {/* Option 2: Custom Upload */}
           <div className="bg-white border-2 border-[#041E42] p-8 rounded-3xl relative overflow-hidden">
             <div className="absolute top-0 right-0 bg-[#041E42] text-white px-4 py-1 text-xs font-bold uppercase">New</div>
             <h3 className="text-2xl font-serif font-bold mb-2 text-[#041E42]">Custom Masterpiece</h3>
@@ -190,26 +124,24 @@ export default function Home() {
             <div className="text-3xl font-bold mb-6">$70</div>
             
             <div className="space-y-4">
-               <Link 
-                href="/upload"
+               <label className="block p-4 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                  <input type="file" className="hidden" accept="image/*" />
+                  <span className="text-sm text-slate-500 text-center block">Click to select your image</span>
+               </label>
+               
+               <a 
+                href={CUSTOM_ENGRAVE_LINK}
                 className="block text-center bg-[#041E42] text-white py-4 rounded-xl font-bold hover:bg-[#001433] transition"
               >
-                Upload & Preview Your Image
-              </Link>
-              <p className="text-[10px] text-slate-400 text-center">Upload your image to see a preview, then purchase when ready.</p>
+                Purchase Custom Engraving
+              </a>
+              <p className="text-[10px] text-slate-400 text-center">After purchase, we will confirm your design via email.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {error && (
-        <div className="max-w-6xl mx-auto px-6 mb-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
-            {error}
-          </div>
-        </div>
-      )}
-
+      {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 py-12 px-6 text-center">
         <p className="font-serif text-slate-200 text-lg mb-4">NITTANY CRAFT.</p>
         <p className="text-sm">Not officially affiliated with Pennsylvania State University.</p>
