@@ -3,6 +3,9 @@ import Stripe from 'stripe';
 import { put } from '@vercel/blob';
 import { sendPurchaseNotification } from '@/lib/email';
 
+// Disable body parsing - we need raw body for Stripe webhook signature verification
+export const runtime = 'nodejs';
+
 // Initialize Stripe lazily (only when needed)
 function getStripe() {
   if (!process.env.STRIPE_SECRET_KEY) {
