@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const priceString = body.price;
     const testMode = body.testMode === true; // Check for test mode flag
-    let price = priceString ? parseFloat(priceString) : 35.00; // Default to $35 if not provided
+    let price = priceString ? parseFloat(priceString) : 35.00; // Default to $50 if not provided
     
     // Override price to 51 cents in test mode
     if (testMode) {

@@ -30,13 +30,18 @@ export async function POST(request: NextRequest) {
     // Get price from request body (in dollars, e.g., "35" for $35.00)
     const body = await request.json();
     const priceString = body.price;
+<<<<<<< HEAD
+    const price = priceString ? parseFloat(priceString) : 35.00; // Default to $35 if not provided
+=======
     const testMode = body.testMode === true; // Check for test mode flag
-    let price = priceString ? parseFloat(priceString) : 35.00; // Default to $35 if not provided
+    let price = priceString ? parseFloat(priceString) : 50.00; // Default to $50 if not provided
     
     // Override price to 51 cents in test mode
     if (testMode) {
       price = 0.51;
     }
+    
+>>>>>>> 71206be03c731a5bb589aad8f3bc974a38682c6b
     const unitAmount = Math.round(price * 100); // Convert to cents
 
     if (isNaN(price) || price <= 0) {
@@ -83,7 +88,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         orderType: 'old-main-classic',
         price: price.toString(), // Store price in metadata for email
-        // testMode: testMode ? 'true' : 'false', // Store test mode flag
+        testMode: testMode ? 'true' : 'false', // Store test mode flag
       },
     });
 
