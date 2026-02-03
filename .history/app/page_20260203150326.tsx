@@ -153,7 +153,7 @@ export default function Home() {
         <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-white border-2 border-slate-200 p-8 rounded-3xl hover:border-[#041E42] transition group">
             <h3 className="text-2xl font-serif font-bold mb-2 text-[#041E42]">The Old Main Classic</h3>
-            <div className="text-3xl font-bold mb-6">35</div>
+            <div className="text-3xl font-bold mb-6">$50</div>
             <button
               onClick={handleOldMainPurchase}
               disabled={isLoading}

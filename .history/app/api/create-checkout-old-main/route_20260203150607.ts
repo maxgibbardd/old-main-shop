@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     const stripe = getStripe();
 
-    // Get price from request body (in dollars, e.g., "35" for $35.00)
+    // Get price from request body (in dollars, e.g., "50" for $50.00)
     const body = await request.json();
     const priceString = body.price;
     const price = priceString ? parseFloat(priceString) : 35.00; // Default to $35 if not provided
