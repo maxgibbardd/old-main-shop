@@ -166,7 +166,7 @@ export default function Home() {
           <div className="bg-white border-2 border-[#041E42] p-8 rounded-3xl relative overflow-hidden">
             <div className="absolute top-0 right-0 bg-[#041E42] text-white px-4 py-1 text-xs font-bold uppercase">New</div>
             <h3 className="text-2xl font-serif font-bold mb-2 text-[#041E42]">Custom Masterpiece</h3>
-            <div className="text-3xl font-bold mb-6">$55</div>
+            <div className="text-3xl font-bold mb-6">$50</div>
             <Link href="/upload" className="block text-center bg-[#041E42] text-white py-4 rounded-xl font-bold">
               Upload & Preview Your Image
             </Link>
